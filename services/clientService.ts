@@ -1,14 +1,19 @@
 import { db } from "@/firebase.config";
 import { Client } from "@/interfaces/client";
-import { collection, onSnapshot, QuerySnapshot } from "firebase/firestore";
+import { collection } from "firebase/firestore";
+import { useCollection } from "react-firebase-hooks/firestore";
 
-export const subscribeToClients = (callback: (clients: Client[]) => void) => {
-  const clientsRef = collection(db, "clients");
-  return onSnapshot(clientsRef, (querySnapshot: QuerySnapshot) => {
-    const clients = querySnapshot.docs.map((client) => ({
-      id: client.id,
-      ...client.data(),
+export const getClients = () => {
+  const ref = collection(db, "clients");
+  const [value, loading, error] = useCollection(ref);
+
+  let clients: Client[] = [];
+
+  if (value) {
+    clients = value.docs.map(doc => ({
+      ...doc.data()
     })) as Client[];
-    callback(clients);
-  });
+  }
+
+  return { clients, loading, error };
 };

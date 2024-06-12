@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Client } from "@/interfaces/client";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -22,19 +22,31 @@ import {
   SelectValue,
 } from "./ui/select";
 
-import { Client } from "@/interfaces/client";
-import { subscribeToClients } from "@/services/clientService";
+import { Payroll } from "@/interfaces/payroll";
+import { getClients } from "@/services/clientService";
+import { addPayroll } from "@/services/payrollService";
+import { useState } from "react";
 
 const AddPayroll = () => {
-  const [clients, setClients] = useState<Client[]>([]);
+  const { clients, loading } = getClients();
+  const [client, setClient] = useState<string | null>(null);
+  const [amount, setAmount] = useState<number | string>("");
 
-  useEffect(() => {
-    const unsubscribe = subscribeToClients((clientsData) => {
-      setClients(clientsData);
-    });
+  const handleAddPayroll = async () => {
+    if (client && amount) {
+      const newPayroll: Payroll = {
+        client: client,
+        amount: Number(amount),
+        date: "Jun 1 - 15, 2024",
+        status: "Open For Billing",
+      };
 
-    return () => unsubscribe();
-  }, []);
+      await addPayroll(newPayroll);
+
+      setClient(null);
+      setAmount("");
+    }
+  };
 
   return (
     <Dialog>
@@ -46,14 +58,14 @@ const AddPayroll = () => {
           <DialogTitle>Add Payroll</DialogTitle>
           <DialogDescription>Add new payroll</DialogDescription>
         </DialogHeader>
-        <Select>
-          <SelectTrigger>
-            <SelectValue placeholder="Select a client" />
+        <Select onValueChange={setClient}>
+          <SelectTrigger disabled={loading}>
+            <SelectValue placeholder={loading ? "Fetching clients" : "Select a client"} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Clients</SelectLabel>
-              {clients.map((client) => (
+              {clients.map((client: Client) => (
                 <SelectItem key={client.id} value={client.name}>
                   {client.code} - {client.name}
                 </SelectItem>
@@ -61,9 +73,14 @@ const AddPayroll = () => {
             </SelectGroup>
           </SelectContent>
         </Select>
-        <Input placeholder="Amount"></Input>
+        <Input
+          placeholder="Amount"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}></Input>
         <DialogFooter>
-          <Button type="submit">Confirm</Button>
+          <Button type="submit" onClick={handleAddPayroll}>
+            Confirm
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
