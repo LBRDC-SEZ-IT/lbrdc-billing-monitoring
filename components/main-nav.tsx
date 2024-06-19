@@ -1,11 +1,11 @@
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
-import { MainNavItem } from "@/types";
+import { NavItem } from "@/types";
 import Link from "next/link";
 import { Icons } from "./icons";
 
 interface MainNavProps {
-  items?: MainNavItem[];
+  items?: NavItem[];
 }
 
 export function MainNav({ items }: MainNavProps) {

@@ -1,3 +1,8 @@
+import { LucideIcon } from "lucide-react";
+
+export type SortType = "Text" | "Number" | "Date" | "Default";
+export type AlignType = "start" | "end";
+
 export type SiteConfig = {
   name: string
   description: string
@@ -9,12 +14,22 @@ export type SiteConfig = {
 
 export type NavItem = {
   title: string
-  href: string
+  visible: boolean
+  icon?: LucideIcon
+  href?: string
   disabled?: boolean
+  hasSubMenu?: boolean
+  subMenuItems?: NavItem[]
 }
 
-export type MainNavItem = NavItem
-
 export type MarketingConfig = {
-  mainNav: MainNavItem[]
+  mainNav: NavItem[]
+}
+
+export type PayableConfig = {
+  sideNav: NavItem[]
+}
+
+export type InboundConfig = {
+  sideNav: NavItem[]
 }

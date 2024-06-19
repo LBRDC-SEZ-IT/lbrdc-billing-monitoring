@@ -1,15 +1,16 @@
 import { MarketingConfig } from "@/types"
 
-
 export const marketingConfig: MarketingConfig = {
   mainNav: [
     {
-      title: "Payroll",
-      href: "/payroll"
+      title: "Outbound",
+      href: "/outbound",
+      visible: true,
     },
     {
-      title: "Billing",
-      href: "/billing"
+      title: "Inbound",
+      href: "/inbound",
+      visible: true,
     }
   ]
 }

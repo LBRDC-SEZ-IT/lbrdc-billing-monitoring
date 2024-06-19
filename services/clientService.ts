@@ -5,15 +5,16 @@ import { useCollection } from "react-firebase-hooks/firestore";
 
 export const getClients = () => {
   const ref = collection(db, "clients");
-  const [value, loading, error] = useCollection(ref);
+  const [snapshot, clientsLoading, clientsError] = useCollection(ref);
 
   let clients: Client[] = [];
 
-  if (value) {
-    clients = value.docs.map(doc => ({
+  if (snapshot) {
+    clients = snapshot.docs.map(doc => ({
+      id: doc.id,
       ...doc.data()
     })) as Client[];
   }
 
-  return { clients, loading, error };
+  return { clients, clientsLoading, clientsError };
 };

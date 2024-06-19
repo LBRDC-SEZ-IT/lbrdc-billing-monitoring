@@ -6,6 +6,7 @@ import {
   ColumnDef,
   ColumnFiltersState,
   SortingState,
+  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -14,8 +15,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -24,6 +23,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { DataTablePagination } from "./data-table-pagination";
+import DataTableToggleColumn from "./data-table-toggle-column";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -32,8 +33,8 @@ interface DataTableProps<TData, TValue> {
 
 export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
 
   const table = useReactTable({
     data,
@@ -44,21 +45,18 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
       columnFilters,
+      columnVisibility,
     },
   });
 
   return (
     <div>
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter clients..."
-          value={(table.getColumn("client")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn("client")?.setFilterValue(event.target.value)}
-          className="max-w-sm"
-        />
+      <div className="flex items-center py-4 gap-4">
+        <DataTableToggleColumn table={table} />
       </div>
       <div className="rounded-md border">
         <Table>
@@ -77,7 +75,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className="font-medium">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
@@ -98,22 +96,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}>
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}>
-          Next
-        </Button>
-      </div>
+      <DataTablePagination table={table} />
     </div>
   );
 }
