@@ -20,7 +20,7 @@ export function MainNav({ items }: MainNavProps) {
           {items?.map((item, index) => (
             <Link
               key={index}
-              href={item.disabled ? "#" : item.href}
+              href={item.disabled ? "#" : item.href!}
               className={cn(
                 "text-sm font-medium hover:text-foreground/80 transition-colors",
                 item.disabled && "cursor-not-allowed opacity-80"
