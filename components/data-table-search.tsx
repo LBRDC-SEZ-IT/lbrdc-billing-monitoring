@@ -12,6 +12,7 @@ export default function DataTableSearch<TData>({ table }: DataTableSearchProps<T
 
   return (
     <Input
+      name="search"
       placeholder="Search ..."
       value={(filterableColumn.getFilterValue() as string) ?? ""}
       onChange={(event) => filterableColumn.setFilterValue(event.target.value)}

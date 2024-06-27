@@ -10,22 +10,14 @@ export const inboundConfig: InboundConfig = {
     {
       title: "Dashboard",
       visible: true,
-      href: "/inbound",
+      href: "/",
       icon: Icons.navDashboard
     },
     {
-      title: "Accounts",
+      title: "Inbound Accounts",
       visible: true,
       icon: Icons.navPayables,
-      hasSubMenu: true,
-      subMenuItems: [
-        {
-          title: "All",
-          visible: true,
-          href: "/inbound/accounts",
-          icon: Icons.navPayables
-        },
-      ]
+      href: "/inbound",
     },
   ]
 }

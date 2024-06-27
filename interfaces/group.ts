@@ -1,6 +1,6 @@
-export interface Client {
+export interface Group {
   _id: string;
+  clientRefID: string;
   name: string;
-  code: string;
   _creationTime: number;
 }

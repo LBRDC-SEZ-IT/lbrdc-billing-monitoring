@@ -5,12 +5,12 @@ export const marketingConfig: MarketingConfig = {
     {
       title: "Outbound",
       href: "/outbound",
-      visible: true,
+      visible: false,
     },
     {
       title: "Inbound",
       href: "/inbound",
-      visible: true,
+      visible: false,
     }
   ]
 }

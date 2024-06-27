@@ -1,22 +1,23 @@
 "use client";
 
 import { siteConfig } from "@/config/site";
-import { CurrentUserFirstName, CurrentUserLastName, CurrentUserRoleType } from "@/config/user";
 import { cn } from "@/lib/utils";
 import { NavItem } from "@/types";
+import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icons } from "./icons";
+import ThemeToggleSwitch from "./theme-toggle-switch";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
-import { Avatar, AvatarFallback } from "./ui/avatar";
 import { buttonVariants } from "./ui/button";
 import { Separator } from "./ui/separator";
 
 interface SideNavProps {
   items?: NavItem[];
+  emailAddress: string;
 }
 
-export default function SideNav({ items }: SideNavProps) {
+export default function SideNav({ items, emailAddress }: SideNavProps) {
   const pathName = usePathname();
 
   return (
@@ -80,20 +81,13 @@ export default function SideNav({ items }: SideNavProps) {
           )}
       </div>
 
-      <div className="flex flex-col items-center gap-6 p-3 lg:p-6">
-        <div className="flex items-center gap-2 w-full lg:px-2">
-          <Avatar className="size-8 lg:size-10">
-            <AvatarFallback>{CurrentUserFirstName.charAt(0)}</AvatarFallback>
-          </Avatar>
-          <div className="hidden lg:flex flex-col">
-            <span className="text-sm">
-              {CurrentUserFirstName} {CurrentUserLastName}
-            </span>
-            <span className="text-xs text-muted-foreground">{CurrentUserRoleType}</span>
-          </div>
+      <div className="flex flex-col gap-6 p-3 lg:p-6">
+        <div className="flex items-center gap-4">
+          <UserButton afterSignOutUrl="/" />
+          <span className="truncate text-sm font-medium">{emailAddress}</span>
         </div>
         <Separator className="hidden lg:block" />
-        {/* <ThemeToggleSwitch /> */}
+        <ThemeToggleSwitch />
       </div>
     </aside>
   );

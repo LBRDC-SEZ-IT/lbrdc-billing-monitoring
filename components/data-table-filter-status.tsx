@@ -13,18 +13,18 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import {
-  OutboundAccountView,
   OutboundStatusModel,
   OutboundStatusTypes,
   OutboundStatuses,
-} from "@/interfaces/outbound";
+} from "@/constants/outbound-statuses";
+import { Outbound } from "@/interfaces/outbound";
 import { cn } from "@/lib/utils";
 import { Table } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
 
 interface DataTableFilterStatusProps<TData> {
   table: Table<TData>;
-  data: OutboundAccountView[];
+  data: Outbound[];
   excludedStatuses?: OutboundStatusTypes[];
 }
 
@@ -100,7 +100,7 @@ export default function DataTableFilterStatus<TData>({
           {filters.length > 0 ? (
             <>
               <Separator orientation="vertical" />
-              {filters.length > 2 ? (
+              {filters.length > 4 ? (
                 <span className="bg-accent px-2 py-0.5 rounded-sm text-foreground">
                   {filters.length} selected
                 </span>

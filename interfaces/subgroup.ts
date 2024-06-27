@@ -1,6 +1,6 @@
-export interface Client {
+export interface Subgroup {
   _id: string;
+  groupRefID: string;
   name: string;
-  code: string;
   _creationTime: number;
 }

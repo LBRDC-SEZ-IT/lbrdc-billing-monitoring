@@ -60,6 +60,7 @@ export const Icons = {
   actionReject: X,
   actionDelete: Trash2,
   actionClipboardCopy: ClipboardCopy,
+  actionClear: X,
 
   hide: EyeOff,
   sort: ArrowUpDown,
