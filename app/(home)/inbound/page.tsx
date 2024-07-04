@@ -6,13 +6,16 @@ import { useUser } from "@clerk/clerk-react";
 import { useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { columns } from "./_components/column";
-import { DataTable } from "./_components/data-table";
+import { columnInbound } from "./_components/column-inbound";
+import { columnOutbound } from "./_components/column-outbound";
+import { DataTableInbound } from "./_components/data-table-inbound";
+import { DataTableOutbound } from "./_components/data-table-outbound";
 
 const InboundPage = () => {
   const { user } = useUser();
   const router = useRouter();
-  const outbounds = useQuery(api.outbound.get, {});
+  const outbounds = useQuery(api.outbound.get, { status: "Open" });
+  const inbounds = useQuery(api.inbound.get, {});
 
   useEffect(() => {
     if (!user) {
@@ -31,14 +34,29 @@ const InboundPage = () => {
 
   return (
     <>
-      <section className="p-8">
+      <section>
         <Card>
           <CardHeader className="px-8 pt-8">
-            <CardTitle>Inbound</CardTitle>
-            <CardDescription>All records of outgoing accounts.</CardDescription>
+            <CardTitle>Open Accounts</CardTitle>
+            <CardDescription>All records of open accounts.</CardDescription>
           </CardHeader>
           <CardContent className="px-8">
-            <DataTable columns={columns} data={outbounds ?? []} isLoading={!outbounds} />
+            <DataTableOutbound
+              columns={columnOutbound}
+              data={outbounds ?? []}
+              isLoading={!outbounds}
+            />
+          </CardContent>
+        </Card>
+      </section>
+      <section>
+        <Card>
+          <CardHeader className="px-8 pt-8">
+            <CardTitle>Billed Accounts</CardTitle>
+            <CardDescription>All records of billed accounts.</CardDescription>
+          </CardHeader>
+          <CardContent className="px-8">
+            <DataTableInbound columns={columnInbound} data={inbounds ?? []} isLoading={!inbounds} />
           </CardContent>
         </Card>
       </section>

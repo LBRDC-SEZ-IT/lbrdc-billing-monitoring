@@ -21,7 +21,9 @@ export default function PayrollLayout({ children }: PayrollLayoutProps) {
   const storeUser = useMutation(api.users.store);
 
   useEffect(() => {
-    storeUser({});
+    if (user) {
+      storeUser({});
+    }
   });
 
   if (!user) {
@@ -71,7 +73,7 @@ export default function PayrollLayout({ children }: PayrollLayoutProps) {
     <div className="flex">
       <SideNav items={navigations} emailAddress={userEmail} />
       <main className="flex-1 bg-muted-foreground/5">
-        <div className="flex flex-col h-full">{children}</div>
+        <div className="flex flex-col h-full p-8 gap-8">{children}</div>
       </main>
     </div>
   );

@@ -26,16 +26,15 @@ import {
 
 import { DataTablePagination } from "@/components/data-table-pagination";
 import DataTableToggleColumn from "@/components/data-table-toggle-column";
-import FormAddAccountOutbound from "@/components/form-add-account-outbound";
-import { OutboundView } from "@/interfaces/outbound";
+import { InboundView } from "@/interfaces/inbound";
 
 interface DataTableProps<TValue> {
-  columns: ColumnDef<OutboundView, TValue>[];
-  data: OutboundView[];
+  columns: ColumnDef<InboundView, TValue>[];
+  data: InboundView[];
   isLoading: boolean;
 }
 
-export function DataTable<TValue>({ columns, data, isLoading }: DataTableProps<TValue>) {
+export function DataTableInbound<TValue>({ columns, data, isLoading }: DataTableProps<TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalSearch, setGlobalSearch] = React.useState("");
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -66,13 +65,7 @@ export function DataTable<TValue>({ columns, data, isLoading }: DataTableProps<T
           onChange={(e) => setGlobalSearch(e.target.value)}
           className="max-w-xs px-4 h-9"
         />
-        {/* <DataTableFilterStatus
-          table={table}
-          data={data}
-          excludedStatuses={["Approval", "Rejected"]}
-        /> */}
-        <FormAddAccountOutbound className="ml-auto" />
-        <DataTableToggleColumn table={table} />
+        <DataTableToggleColumn table={table} className="ml-auto" />
       </div>
       <div className="rounded-md border">
         <Table>
@@ -136,10 +129,10 @@ export function DataTable<TValue>({ columns, data, isLoading }: DataTableProps<T
                       className="size-36 text-muted-foreground mb-5 bg-background rounded-full p-5 border-2 border-dashed"
                     />
                     <span className="text-lg font-semibold mb-1">
-                      There are no records available
+                      There are billing accounts yet
                     </span>
                     <span className="max-w-lg text-muted-foreground text-pretty text-center">
-                      You can add new record with the &#34;Add Record&#34; button.
+                      This is where the billing accounts will be posted
                     </span>
                   </div>
                 </TableCell>

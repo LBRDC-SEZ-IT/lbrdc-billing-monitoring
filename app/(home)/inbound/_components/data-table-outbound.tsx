@@ -2,20 +2,8 @@
 
 import * as React from "react";
 
-import {
-  ColumnDef,
-  ExpandedState,
-  flexRender,
-  getCoreRowModel,
-  getExpandedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable,
-  VisibilityState,
-} from "@tanstack/react-table";
-
+import { Icons } from "@/components/icons";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -24,28 +12,32 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DataTablePagination } from "./data-table-pagination";
-import DataTableToggleColumn from "./data-table-toggle-column";
-import { Icons } from "./icons";
-import { Input } from "./ui/input";
+import {
+  ColumnDef,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+import { DataTablePagination } from "@/components/data-table-pagination";
+import DataTableToggleColumn from "@/components/data-table-toggle-column";
+import { OutboundView } from "@/interfaces/outbound";
+
+interface DataTableProps<TValue> {
+  columns: ColumnDef<OutboundView, TValue>[];
+  data: OutboundView[];
   isLoading: boolean;
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-  isLoading,
-}: DataTableProps<TData, TValue>) {
+export function DataTableOutbound<TValue>({ columns, data, isLoading }: DataTableProps<TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalSearch, setGlobalSearch] = React.useState("");
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
-    ExpandedContent: false,
-  });
-  const [expanded, setExpanded] = React.useState<ExpandedState>({});
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
 
   const table = useReactTable({
     data,
@@ -57,13 +49,10 @@ export function DataTable<TData, TValue>({
     onGlobalFilterChange: setGlobalSearch,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    getExpandedRowModel: getExpandedRowModel(),
-    onExpandedChange: setExpanded,
     state: {
       sorting,
       globalFilter: globalSearch,
       columnVisibility,
-      expanded,
     },
   });
 
@@ -76,7 +65,7 @@ export function DataTable<TData, TValue>({
           onChange={(e) => setGlobalSearch(e.target.value)}
           className="max-w-xs px-4 h-9"
         />
-        <DataTableToggleColumn className="ml-auto" table={table} />
+        <DataTableToggleColumn table={table} className="ml-auto" />
       </div>
       <div className="rounded-md border">
         <Table>
@@ -107,29 +96,13 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <React.Fragment key={row.id}>
-                  <TableRow data-state={row.getIsSelected() && "selected"}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="px-4 py-2">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                  {row.getIsExpanded() && (
-                    <TableRow>
-                      <TableCell colSpan={columns.length}>
-                        {flexRender(columns.find((c) => c.id === "ExpandedContent")!.cell!, {
-                          row,
-                          column: columns.find((c) => c.id === "ExpandedContent"),
-                          cell: {
-                            getValue: () => null,
-                            renderValue: () => null,
-                          },
-                        } as any)}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </React.Fragment>
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="px-4 py-2">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
               ))
             ) : globalSearch ? (
               <TableRow>
@@ -155,9 +128,9 @@ export function DataTable<TData, TValue>({
                       strokeWidth={0.75}
                       className="size-36 text-muted-foreground mb-5 bg-background rounded-full p-5 border-2 border-dashed"
                     />
-                    <span className="text-lg font-semibold mb-1">There are no billings yet</span>
+                    <span className="text-lg font-semibold mb-1">There are open accounts yet</span>
                     <span className="max-w-lg text-muted-foreground text-pretty text-center">
-                      Click &quot;Add Billing&quot; above to create a billing for this account.
+                      This is where the billable accounts will be posted
                     </span>
                   </div>
                 </TableCell>

@@ -14,7 +14,7 @@ export const outboundConfig: OutboundConfig = {
       href: "/",
     },
     {
-      title: "Outbound Accounts",
+      title: "Accounts",
       visible: true,
       icon: Icons.navPayables,
       href: "/outbound",

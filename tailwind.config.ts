@@ -17,6 +17,9 @@ const config = {
     'text-blue-500',
     'text-neutral-500',
     'text-emerald-500',
+    '[&>*]:bg-emerald-500',
+    '[&>*]:bg-red-500',
+    '[&>*]:bg-yellow-500'
   ],
   darkMode: ["class"],
   content: [

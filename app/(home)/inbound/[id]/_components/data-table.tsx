@@ -16,6 +16,10 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 
+import { DataTablePagination } from "@/components/data-table-pagination";
+import DataTableToggleColumn from "@/components/data-table-toggle-column";
+import { Icons } from "@/components/icons";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -24,21 +28,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DataTablePagination } from "./data-table-pagination";
-import DataTableToggleColumn from "./data-table-toggle-column";
-import { Icons } from "./icons";
-import { Input } from "./ui/input";
+import DialogFormAddBilling from "./dialog-form-add-billing";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isLoading: boolean;
+  accountID: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   isLoading,
+  accountID,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalSearch, setGlobalSearch] = React.useState("");
@@ -76,7 +79,8 @@ export function DataTable<TData, TValue>({
           onChange={(e) => setGlobalSearch(e.target.value)}
           className="max-w-xs px-4 h-9"
         />
-        <DataTableToggleColumn className="ml-auto" table={table} />
+        <DialogFormAddBilling className="ml-auto" accountID={accountID} />
+        <DataTableToggleColumn table={table} />
       </div>
       <div className="rounded-md border">
         <Table>
@@ -110,7 +114,10 @@ export function DataTable<TData, TValue>({
                 <React.Fragment key={row.id}>
                   <TableRow data-state={row.getIsSelected() && "selected"}>
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="px-4 py-2">
+                      <TableCell
+                        key={cell.id}
+                        className="px-4 py-2"
+                        style={{ width: cell.column.columnDef.size }}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}

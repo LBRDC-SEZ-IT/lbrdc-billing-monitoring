@@ -31,7 +31,7 @@ const OutboundPage = () => {
 
   return (
     <>
-      <section className="p-8">
+      <section>
         <Card>
           <CardHeader className="px-8 pt-8">
             <CardTitle>Outbound</CardTitle>

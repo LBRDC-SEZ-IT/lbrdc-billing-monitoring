@@ -27,3 +27,16 @@ export const formatTimestamp = (timestampString: string, toFormat: string) => {
     return format(date, TimeFormat);
   }
 };
+
+export const calculatePercentage = (amount: number, total: number) => {
+  if (total === 0) return 0;
+  return Math.floor((amount / total) * 100);
+};
+
+export const isOverdue = (timestamp: string) => {
+  const date = new Date(timestamp);
+  const currentDate = new Date();
+  const days60Ago = new Date(currentDate.setDate(currentDate.getDate() - 60));
+
+  return date < days60Ago;
+}

@@ -4,15 +4,21 @@ import { mutation, query } from "./_generated/server";
 
 export const get = query({
   args: {
-    outboundID: v.optional(v.id("outboundAccounts"))
+    outboundID: v.optional(v.id("outboundAccounts")),
+    status: v.optional(v.string())
   },
   handler: async (ctx, args) => {
-    let outbounds;
+    let query = ctx.db.query("outboundAccounts");
+
     if (args.outboundID) {
-      outbounds = await ctx.db.query("outboundAccounts").filter(q => q.eq(q.field("_id"), args.outboundID)).collect() as Outbound[];
-    } else {
-      outbounds = await ctx.db.query("outboundAccounts").collect() as Outbound[];
+      query = query.filter(q => q.eq(q.field("_id"), args.outboundID));
     }
+
+    if (args.status) {
+      query = query.filter(q => q.eq(q.field("status"), args.status));
+    }
+
+    const outbounds = await query.collect() as Outbound[];
     
     const clients = await ctx.db.query("clients").collect();
     const groups = await ctx.db.query("groups").collect();
@@ -39,10 +45,10 @@ export const create = mutation({
       from: v.string(),
       to: v.string(),
     }),
-    totalAmount: v.number(),
+    totalAmount: v.float64(),
     categories: v.array(v.object({
       name: v.string(),
-      amount: v.number()
+      amount: v.float64()
     })),
     status: v.string(),
     statusInfo: v.object({

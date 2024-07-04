@@ -14,7 +14,7 @@ export const inboundConfig: InboundConfig = {
       icon: Icons.navDashboard
     },
     {
-      title: "Inbound Accounts",
+      title: "Accounts",
       visible: true,
       icon: Icons.navPayables,
       href: "/inbound",

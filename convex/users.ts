@@ -33,7 +33,7 @@ export const getID = query({
     const identity = await ctx.auth.getUserIdentity();
 
     if (!identity) {
-      throw new Error("Called storeUser without authenticated user.")
+      throw new Error("Called getID without authenticated user.")
     }
 
     const user = await ctx.db

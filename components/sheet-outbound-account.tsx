@@ -39,6 +39,10 @@ const SheetOutboundAccount = ({ open, setOpen, outboundID }: SheetOutboundAccoun
           setTimeout(() => (document.body.style.pointerEvents = ""), 500);
         }}>
         <SheetContent className="flex flex-col justify-between overflow-y-scroll">
+          <SheetHeader>
+            <SheetTitle>Account Details</SheetTitle>
+            <SheetDescription>Here are the details of this account.</SheetDescription>
+          </SheetHeader>
           <div className="flex justify-center items-center gap-2 text-sm h-full">
             <Icons.loader className="animate-spin min-w-5 min-h-5 size-5" />
             Loading account, please wait ...

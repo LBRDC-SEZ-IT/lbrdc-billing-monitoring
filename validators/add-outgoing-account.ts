@@ -6,6 +6,7 @@ export const outgoingAccountSchema = z.object({
   subgroup: z.string().optional(),
   datePeriodFrom: z.date({ required_error: "Please select a start date." }),
   datePeriodTo: z.date({ required_error: "Please select an end date." }),
+  code: z.string(),
   categories: z.array(z.object({
     name: z.string().min(1, { message: "Name is required." }),
     amount: z.number().min(1, { message: "Amount must be greater than 0." })

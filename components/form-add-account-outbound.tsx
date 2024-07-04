@@ -37,7 +37,6 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-import { Label } from "./ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -48,11 +47,13 @@ interface Props {
 
 const FormAddAccountOutbound = ({ className, ...props }: Props) => {
   const { user } = useUser();
+  const curentUserID = useQuery(api.users.getID);
   const createOutgoingAccount = useMutation(api.outbound.create);
   const [isOpen, setIsOpen] = useState(false);
   const [showConfirmClose, setShowConfirmClose] = useState(false);
   const [formStep, setFormStep] = useState(0);
-  const stepHeights = [100, 400, 520];
+  const stepHeights = [100, 400, 600];
+  const [tempAccountCode, setTempAccountCode] = useState("");
 
   const form = useForm<z.infer<typeof outgoingAccountSchema>>({
     resolver: zodResolver(outgoingAccountSchema),
@@ -60,6 +61,7 @@ const FormAddAccountOutbound = ({ className, ...props }: Props) => {
       client: "",
       group: "",
       subgroup: "",
+      code: "",
       categories: [{ name: "", amount: 0 }],
     },
     mode: "onChange",
@@ -147,6 +149,15 @@ const FormAddAccountOutbound = ({ className, ...props }: Props) => {
       if (!isTriggered || !groupState.isDirty || groupState.invalid) return;
       if (!isTriggered || !datePeriodFrom.isDirty || datePeriodFrom.invalid) return;
       if (!isTriggered || !datePeriodTo.isDirty || datePeriodTo.invalid) return;
+
+      const clientInfo = clients?.find((values) => form.getValues("client") === values._id);
+      const startDateCode = format(new Date(form.getValues("datePeriodFrom")), "MMdd");
+      const endDateCode = format(new Date(form.getValues("datePeriodTo")), "MMdd");
+      const yearDateCode = format(new Date(form.getValues("datePeriodTo")), "yyyy");
+      const accountCode = `${clientInfo?.code.toUpperCase()}-${startDateCode}-${endDateCode}-${yearDateCode}`;
+
+      form.setValue("code", accountCode);
+      setTempAccountCode(accountCode);
     }
 
     setFormStep((prev) => prev + 1);
@@ -159,24 +170,17 @@ const FormAddAccountOutbound = ({ className, ...props }: Props) => {
   function onSubmit(data: z.infer<typeof outgoingAccountSchema>) {
     if (!user) {
       toast("Unable to continue", {
-        description: "Can't retrieve user information. Please logout and login again",
+        description: "Can't retrieve user information. Please logout and login again.",
       });
       return;
     }
-
-    const clientInfo = clients?.find((values) => data.client === values._id);
-    const startDateCode = format(new Date(data.datePeriodFrom), "MMdd");
-    const endDateCode = format(new Date(data.datePeriodTo), "MMdd");
-    const yearDateCode = format(new Date(data.datePeriodTo), "yyyy");
-    const accountCode = `${clientInfo?.code.toUpperCase()}-${startDateCode}-${endDateCode}-${yearDateCode}`;
-
     try {
       const newAccount: Outbound = {
-        code: accountCode,
+        code: data.code === "" ? tempAccountCode : data.code,
         clientRefID: data.client,
         groupRefID: data.group,
         subgroupRefID: data.subgroup,
-        authorRefID: user.id,
+        authorRefID: curentUserID!,
         datePeriod: {
           from: data.datePeriodFrom.toISOString(),
           to: data.datePeriodTo.toISOString(),
@@ -448,10 +452,22 @@ const FormAddAccountOutbound = ({ className, ...props }: Props) => {
                       className="space-y-2"
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}>
-                      <Label htmlFor="scrollarea">List of Payable Items</Label>
-                      <ScrollArea
-                        id="scrollarea"
-                        className="h-96 border border-dashed rounded-md py-2">
+                      <FormField
+                        control={form.control}
+                        name="code"
+                        render={({ field }) => (
+                          <FormItem className="mb-2">
+                            <FormLabel>Suggested Code</FormLabel>
+                            <FormControl>
+                              <Input placeholder={tempAccountCode} {...field}></Input>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <p className="text-sm font-medium">List of Items</p>
+                      <ScrollArea className="h-96 border border-dashed rounded-md py-2">
                         <div className="grid grid-cols-9 gap-2 px-4 sticky top-0 bg-background font-semibold">
                           <p className="col-span-4">Name</p>
                           <p>Amount</p>
@@ -478,6 +494,7 @@ const FormAddAccountOutbound = ({ className, ...props }: Props) => {
                                 <FormControl>
                                   <Input
                                     type="number"
+                                    step="any"
                                     {...form.register(`categories.${index}.amount` as const, {
                                       valueAsNumber: true,
                                     })}
