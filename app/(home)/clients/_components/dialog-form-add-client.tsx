@@ -87,7 +87,7 @@ const DialogFormAddClient = () => {
 
   useEffect(() => {
     form.reset();
-  }, [isOpen]);
+  }, [isOpen, form]);
 
   return (
     <>

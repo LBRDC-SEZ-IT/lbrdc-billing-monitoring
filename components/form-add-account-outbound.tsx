@@ -83,11 +83,11 @@ const FormAddAccountOutbound = ({ className, ...props }: Props) => {
   useEffect(() => {
     form.resetField("group");
     form.resetField("subgroup");
-  }, [watchClient]);
+  }, [watchClient, form]);
 
   useEffect(() => {
     form.resetField("subgroup");
-  }, [watchGroup]);
+  }, [watchGroup, form]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -96,7 +96,7 @@ const FormAddAccountOutbound = ({ className, ...props }: Props) => {
       form.resetField("datePeriodTo");
       setFormStep(0);
     }
-  }, [isOpen]);
+  }, [isOpen, form]);
 
   const handleCloseDialog = () => {
     if (!isOpen) {

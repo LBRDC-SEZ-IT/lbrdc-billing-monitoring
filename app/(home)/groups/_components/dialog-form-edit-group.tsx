@@ -89,7 +89,7 @@ const DialogFormEditGroup = ({ groupID, ...props }: Props) => {
 
   useEffect(() => {
     form.reset();
-  }, [props.isOpen]);
+  }, [props.isOpen, form]);
 
   return (
     <AlertDialog open={props.isOpen} onOpenChange={props.setIsOpen}>

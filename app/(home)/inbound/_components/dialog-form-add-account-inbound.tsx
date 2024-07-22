@@ -99,7 +99,7 @@ const DialogFormAddAccountInbound = ({ open, setOpen, row }: Props) => {
     if (!open) {
       form.reset();
     }
-  }, [open]);
+  }, [open, form]);
 
   if (row) {
     const rowData = row.original;

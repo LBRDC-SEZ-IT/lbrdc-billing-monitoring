@@ -100,7 +100,7 @@ const DialogFormAddBilling = ({ className, accountID }: Props) => {
 
   useEffect(() => {
     form.reset();
-  }, [isOpen]);
+  }, [isOpen, form]);
 
   if (inbound) {
     return (

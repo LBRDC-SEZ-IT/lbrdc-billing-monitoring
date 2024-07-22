@@ -53,7 +53,7 @@ export default function DataTableFilterStatus<TData>({
       { value: "Completed", count: completedCount },
       { value: "Cancelled", count: cancelledCount },
     ];
-  }, [table.getRowModel().rows]);
+  }, [table.getRowModel().rows, data]);
 
   const filteredStatuses = excludedStatuses
     ? OutboundStatuses.filter((status) => !excludedStatuses.includes(status.value))
@@ -90,7 +90,7 @@ export default function DataTableFilterStatus<TData>({
   useEffect(() => {
     const filterValue = filters.length > 0 ? filters : null;
     table.getColumn("status")?.setFilterValue(filterValue);
-  }, [filters]);
+  }, [filters, table]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

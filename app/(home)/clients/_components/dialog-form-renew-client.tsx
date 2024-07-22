@@ -83,13 +83,13 @@ const DialogFormRenewClient = ({ clientID, ...props }: Props) => {
 
   useEffect(() => {
     form.reset();
-  }, [props.isOpen]);
+  }, [props.isOpen, form]);
 
   return (
     <AlertDialog open={props.isOpen} onOpenChange={props.setIsOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Renew Client's Contract</AlertDialogTitle>
+          <AlertDialogTitle>Renew Client&apos;s Contract</AlertDialogTitle>
           <AlertDialogDescription>
             Enter the new contract period for this client.
           </AlertDialogDescription>
