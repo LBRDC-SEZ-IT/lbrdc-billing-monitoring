@@ -45,4 +45,8 @@ export interface InboundView extends Inbound {
     name: string;
     amount: number;
   }[];
+  totalBillings: number;
+  totalCollections: number;
+  collectionCount: number;
+  balance: number;
 }

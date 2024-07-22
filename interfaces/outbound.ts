@@ -48,10 +48,10 @@
 export interface Outbound {
   _id?: string;
   code: string;
-  clientRefID: string;
-  groupRefID: string;
-  subgroupRefID?: string;
-  authorRefID: string;
+  client_ref_ID: string;
+  group_ref_ID: string;
+  subgroup_ref_ID?: string;
+  author_ref_ID: string;
   datePeriod: {
     from: string;
     to: string;

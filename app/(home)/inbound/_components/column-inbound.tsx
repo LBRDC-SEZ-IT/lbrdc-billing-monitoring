@@ -97,20 +97,40 @@ export const columnInbound: ColumnDef<InboundView>[] = [
     },
   },
   {
+    id: "Unbilled",
+    accessorFn: (row) => {
+      return row.billable_amount - row.totalBillings;
+    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} type="Number" align="end" title="Unbilled" />
+    ),
+    cell: ({ row }) => {
+      const unbilled = row.original.billable_amount - row.original.totalBillings;
+
+      return (
+        <div className="text-right">
+          {unbilled.toLocaleString("en-US", {
+            style: "currency",
+            currency: "PHP",
+          })}
+        </div>
+      );
+    },
+  },
+  {
     id: "Billed",
     accessorKey: "billings",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} type="Number" align="end" title="Billed" />
     ),
     cell: ({ row }) => {
-      const amount = row.original.billings?.reduce((n, { amount }) => n + amount, 0);
       return (
-        <div className="text-right text-blue-500">
-          {amount?.toLocaleString("en-US", {
+        <div className="text-right text-blue-500 font-semibold">
+          {row.original.totalBillings.toLocaleString("en-US", {
             style: "currency",
             currency: "PHP",
           })}
-          {amount !== 0 && (
+          {row.original.totalBillings !== 0 && (
             <p className="text-xs text-muted-foreground font-normal">
               {row.original.billings?.length} billing(s)
             </p>
@@ -121,39 +141,20 @@ export const columnInbound: ColumnDef<InboundView>[] = [
   },
   {
     id: "Collected",
-    accessorFn: (row) => {
-      let totalCollections = 0;
-      row.billings?.forEach((billing) => {
-        billing.collections?.forEach((collection) => {
-          totalCollections += collection.amount;
-        });
-      });
-      return totalCollections;
-    },
+    accessorKey: "totalCollections",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} type="Number" align="end" title="Collected" />
     ),
     cell: ({ row }) => {
-      let totalCollections = 0;
-      let collectionsCount = 0;
-      const rowDate = row.original;
-
-      rowDate.billings?.forEach((billing) => {
-        billing.collections?.forEach((collection) => {
-          collectionsCount++;
-          totalCollections += collection.amount;
-        });
-      });
-
       return (
-        <div className="text-right text-emerald-500">
-          {totalCollections.toLocaleString("en-US", {
+        <div className="text-right text-emerald-500  font-semibold">
+          {row.original.totalCollections.toLocaleString("en-US", {
             style: "currency",
             currency: "PHP",
           })}
-          {collectionsCount !== 0 && (
+          {row.original.collectionCount !== 0 && (
             <p className="text-xs text-muted-foreground font-normal">
-              {collectionsCount} collection(s)
+              {row.original.collectionCount} collection(s)
             </p>
           )}
         </div>
@@ -161,35 +162,15 @@ export const columnInbound: ColumnDef<InboundView>[] = [
     },
   },
   {
-    id: "Balance",
-    accessorFn: (row) => {
-      let totalCollections = 0;
-      row.billings?.forEach((billing) => {
-        billing.collections?.forEach((collection) => {
-          totalCollections += collection.amount;
-        });
-      });
-      return row.billable_amount - totalCollections;
-    },
+    id: "Billed Balance",
+    accessorKey: "balance",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} type="Number" align="end" title="Balance" />
+      <DataTableColumnHeader column={column} type="Number" align="end" title="Billed Balance" />
     ),
     cell: ({ row }) => {
-      const rowData = row.original;
-      let totalCollections = 0;
-      let balance = 0;
-
-      rowData.billings?.forEach((billing) => {
-        billing.collections?.forEach((collection) => {
-          totalCollections += collection.amount;
-        });
-      });
-
-      balance = rowData.billable_amount - totalCollections;
-
       return (
-        <div className={cn("text-right", balance > 0 && "text-red-500")}>
-          {balance.toLocaleString("en-US", {
+        <div className={cn("text-right font-semibold", row.original.balance > 0 && "text-red-500")}>
+          {row.original.balance.toLocaleString("en-US", {
             style: "currency",
             currency: "PHP",
           })}

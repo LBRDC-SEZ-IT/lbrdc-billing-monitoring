@@ -11,13 +11,31 @@ export const inboundConfig: InboundConfig = {
       title: "Dashboard",
       visible: true,
       href: "/",
-      icon: Icons.navDashboard
+      icon: Icons.sideNavigation.dashboard
     },
     {
       title: "Accounts",
       visible: true,
-      icon: Icons.navPayables,
+      icon: Icons.sideNavigation.accounts,
       href: "/inbound",
     },
+    {
+      title: "Management",
+      visible: true,
+      icon: Icons.sideNavigation.management,
+      hasSubMenu: true,
+      subMenuItems: [
+        {
+          title: "Clients",
+          visible: true,
+          href: "/clients",
+        },
+        {
+          title: "Groups",
+          visible: true,
+          href: "/groups",
+        },
+      ]
+    }
   ]
 }

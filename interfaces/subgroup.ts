@@ -1,6 +1,6 @@
 export interface Subgroup {
   _id: string;
-  groupRefID: string;
+  group_ref_ID: string;
   name: string;
   _creationTime: number;
 }

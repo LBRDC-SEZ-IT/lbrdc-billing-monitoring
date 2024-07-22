@@ -5,7 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { calculatePercentage, DateFormat, isOverdue } from "@/config/global";
 import { BillingStatuses } from "@/constants/billing-statuses";
-import { BillingWithCollection } from "@/interfaces/billing";
+import { BillingWithCollectionRemarks } from "@/interfaces/billing";
 import { cn } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format, parseISO } from "date-fns";
@@ -13,17 +13,31 @@ import ActionBilling from "./action-billing";
 import ButtonCollectTrigger from "./button-collect-trigger";
 import SubRowCollections from "./sub-row-collections";
 
-export const columnBillings: ColumnDef<BillingWithCollection>[] = [
+export const columnBillings: ColumnDef<BillingWithCollectionRemarks>[] = [
   {
     id: "Code",
     accessorKey: "code",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} type="Text" align="start" title="Code" />
     ),
+    cell: ({ row }) => {
+      const data = row.original;
+      return (
+        <div className="flex items-center gap-2">
+          {data.billingRemarksCount! > 0 && (
+            <div className="flex items-center border w-fit px-1.5 py-0.5 gap-1 rounded-md">
+              <Icons.display.remarks strokeWidth={1.75} className="min-w-3.5 min-h-3.5 size-3.5" />
+              <span className="text-xs font-semibold">{data.billingRemarksCount}</span>
+            </div>
+          )}
+          <p className="font-semibold">{data.code}</p>
+        </div>
+      );
+    },
   },
   {
     id: "Date of Billing",
-    accessorKey: "timestamp",
+    accessorFn: (row) => format(parseISO(row.timestamp), DateFormat),
     header: ({ column }) => (
       <DataTableColumnHeader column={column} type="Date" align="start" title="Date of Billing" />
     ),
@@ -166,26 +180,20 @@ export const columnBillings: ColumnDef<BillingWithCollection>[] = [
     },
   },
   {
-    id: "Expand",
+    id: "ExpandAndActions",
     enableHiding: false,
     size: 10,
     cell: ({ row }) => {
-      const hasCollections = row.original.collections && row.original.collections?.length > 0;
-
       return (
         <div className="flex items-center">
           <div className="flex flex-1">
             <ButtonCollectTrigger billingID={row.original._id} />
           </div>
           <div className="flex items-center justify-between">
-            <ActionBilling />
+            <ActionBilling row={row} />
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  onClick={() => row.toggleExpanded()}
-                  variant={"ghost"}
-                  size={"icon"}
-                  disabled={!hasCollections}>
+                <Button onClick={() => row.toggleExpanded()} variant={"ghost"} size={"icon"}>
                   {row.getIsExpanded() ? (
                     <Icons.actionCollapse className="min-h-4 min-w-4 size-4" />
                   ) : (

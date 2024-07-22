@@ -1,6 +1,15 @@
-export interface Client {
-  _id: string;
-  name: string;
+import { ConvexStandard } from "./convex";
+
+export interface contract {
+  status: string;
+  from_date: string;
+  to_date: string;
+  timestamp: string;
+}
+
+export interface Client extends ConvexStandard {
   code: string;
-  _creationTime: number;
+  name: string;
+  description: string;
+  contracts: contract[];
 }

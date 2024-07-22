@@ -72,7 +72,7 @@ const FormAddAccountOutbound = ({ className, ...props }: Props) => {
     name: "categories",
   });
 
-  const clients = useQuery(api.clients.get);
+  const clients = useQuery(api.clients.get, {});
   const watchClient = form.watch("client");
   const watchGroup = form.watch("group");
   const watchPayables = form.watch("categories");
@@ -167,48 +167,50 @@ const FormAddAccountOutbound = ({ className, ...props }: Props) => {
     setFormStep((prev) => prev - 1);
   };
 
-  function onSubmit(data: z.infer<typeof outgoingAccountSchema>) {
+  const onSubmit = async (data: z.infer<typeof outgoingAccountSchema>) => {
     if (!user) {
       toast("Unable to continue", {
         description: "Can't retrieve user information. Please logout and login again.",
       });
       return;
     }
-    try {
-      const newAccount: Outbound = {
-        code: data.code === "" ? tempAccountCode : data.code,
-        clientRefID: data.client,
-        groupRefID: data.group,
-        subgroupRefID: data.subgroup,
-        authorRefID: curentUserID!,
-        datePeriod: {
-          from: data.datePeriodFrom.toISOString(),
-          to: data.datePeriodTo.toISOString(),
-        },
-        totalAmount: totalPayableAmount,
-        categories: data.categories,
-        status: "Open",
-        statusInfo: {
-          userID: user.id,
-          timestamp: Date.now().toString(),
-        },
+
+    const newAccount: Outbound = {
+      code: data.code === "" ? tempAccountCode : data.code,
+      client_ref_ID: data.client,
+      group_ref_ID: data.group,
+      subgroup_ref_ID: data.subgroup,
+      author_ref_ID: curentUserID!,
+      datePeriod: {
+        from: data.datePeriodFrom.toISOString(),
+        to: data.datePeriodTo.toISOString(),
+      },
+      totalAmount: totalPayableAmount,
+      categories: data.categories,
+      status: "Open",
+      statusInfo: {
+        userID: user.id,
+        timestamp: Date.now().toString(),
+      },
+    };
+
+    if (user.organizationMemberships[0].role === "org:manager_outbound") {
+      newAccount.approvalInfo = {
+        userID: user.id,
+        timestamp: Date.now().toString(),
       };
-
-      if (user.organizationMemberships[0].role === "org:manager_outbound") {
-        newAccount.approvalInfo = {
-          userID: user.id,
-          timestamp: Date.now().toString(),
-        };
-      }
-
-      createOutgoingAccount(newAccount).then(() => {
-        toast("You have successfully added a new account!");
-        setIsOpen(false);
-      });
-    } catch (error) {
-      console.log("form-add-account-outbound.ts:onSubmit; ", error);
     }
-  }
+
+    const response = await createOutgoingAccount(newAccount);
+
+    if (response.success) {
+      toast.success(response.message);
+    } else {
+      toast.error(response.message);
+    }
+
+    setIsOpen(false);
+  };
 
   return (
     <>

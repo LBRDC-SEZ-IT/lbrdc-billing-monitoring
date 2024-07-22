@@ -122,12 +122,8 @@ export function DataTableOutbound<TValue>({ columns, data, isLoading }: DataTabl
               </TableRow>
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="py-12">
+                <TableCell colSpan={columns.length} className="py-8">
                   <div className="flex flex-col justify-center items-center">
-                    <Icons.illustration.noData
-                      strokeWidth={0.75}
-                      className="size-36 text-muted-foreground mb-5 bg-background rounded-full p-5 border-2 border-dashed"
-                    />
                     <span className="text-lg font-semibold mb-1">There are open accounts yet</span>
                     <span className="max-w-lg text-muted-foreground text-pretty text-center">
                       This is where the billable accounts will be posted

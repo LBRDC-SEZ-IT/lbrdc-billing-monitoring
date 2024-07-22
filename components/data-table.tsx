@@ -24,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 import { DataTablePagination } from "./data-table-pagination";
 import DataTableToggleColumn from "./data-table-toggle-column";
 import { Icons } from "./icons";
@@ -33,12 +34,18 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isLoading: boolean;
+  actionButton?: React.ReactNode;
+  emptyTitle: string;
+  emptyDescription: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   isLoading,
+  actionButton,
+  emptyTitle,
+  emptyDescription,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalSearch, setGlobalSearch] = React.useState("");
@@ -76,7 +83,8 @@ export function DataTable<TData, TValue>({
           onChange={(e) => setGlobalSearch(e.target.value)}
           className="max-w-xs px-4 h-9"
         />
-        <DataTableToggleColumn className="ml-auto" table={table} />
+        {actionButton}
+        <DataTableToggleColumn className={cn(!actionButton && "ml-auto")} table={table} />
       </div>
       <div className="rounded-md border">
         <Table>
@@ -108,16 +116,21 @@ export function DataTable<TData, TValue>({
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <React.Fragment key={row.id}>
-                  <TableRow data-state={row.getIsSelected() && "selected"}>
+                  <TableRow
+                    data-state={row.getIsSelected() && "selected"}
+                    className={cn(row.getIsExpanded() && "border-b-0 bg-muted-foreground/5")}>
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="px-4 py-2">
+                      <TableCell
+                        key={cell.id}
+                        className="px-4 py-2"
+                        style={{ width: cell.column.columnDef.size }}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
                   </TableRow>
                   {row.getIsExpanded() && (
-                    <TableRow>
-                      <TableCell colSpan={columns.length}>
+                    <TableRow className={cn(row.getIsExpanded() && "bg-muted-foreground/5")}>
+                      <TableCell colSpan={columns.length} className="pt-0">
                         {flexRender(columns.find((c) => c.id === "ExpandedContent")!.cell!, {
                           row,
                           column: columns.find((c) => c.id === "ExpandedContent"),
@@ -155,9 +168,9 @@ export function DataTable<TData, TValue>({
                       strokeWidth={0.75}
                       className="size-36 text-muted-foreground mb-5 bg-background rounded-full p-5 border-2 border-dashed"
                     />
-                    <span className="text-lg font-semibold mb-1">There are no billings yet</span>
+                    <span className="text-lg font-semibold mb-1">{emptyTitle}</span>
                     <span className="max-w-lg text-muted-foreground text-pretty text-center">
-                      Click &quot;Add Billing&quot; above to create a billing for this account.
+                      {emptyDescription}
                     </span>
                   </div>
                 </TableCell>

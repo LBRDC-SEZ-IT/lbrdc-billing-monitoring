@@ -9,8 +9,8 @@ export const formatDateRange = ({ from, to }: { from: string; to: string }) => {
 
   const sameYear = fromDate.getFullYear() === toDate.getFullYear();
 
-  const fromFormat = sameYear ? "MMM dd" : "MMM dd, yyyy";
-  const toFormat = "MMM dd, yyyy";
+  const fromFormat = sameYear ? "MMMM dd" : "MMMM dd, yyyy";
+  const toFormat = "MMMM dd, yyyy";
 
   const formattedFrom = format(fromDate, fromFormat);
   const formattedTo = format(toDate, toFormat);
@@ -19,12 +19,22 @@ export const formatDateRange = ({ from, to }: { from: string; to: string }) => {
 };
 
 export const formatTimestamp = (timestampString: string, toFormat: string) => {
-  const timestamp = Number(timestampString);
-  const date = new Date(timestamp);
+  let date;
+
+  // Check if the timestampString is a number or ISO string
+  if (!isNaN(Number(timestampString))) {
+    const timestamp = Number(timestampString);
+    date = new Date(timestamp);
+  } else {
+    date = new Date(timestampString);
+  }
+
   if (toFormat === "Date") {
     return format(date, DateFormat);
   } else if (toFormat === "Time") {
     return format(date, TimeFormat);
+  } else {
+    return date.toISOString(); // Default return for unrecognized format
   }
 };
 
@@ -39,4 +49,11 @@ export const isOverdue = (timestamp: string) => {
   const days60Ago = new Date(currentDate.setDate(currentDate.getDate() - 60));
 
   return date < days60Ago;
+}
+
+export const convertToMoney = (rawValue: number) => {
+  return rawValue.toLocaleString("en-us", {
+    currency: "PHP",
+    style: "currency"
+  })
 }

@@ -17,6 +17,7 @@ import type {
 import type * as billings from "../billings.js";
 import type * as clients from "../clients.js";
 import type * as collection from "../collection.js";
+import type * as descriptions from "../descriptions.js";
 import type * as groups from "../groups.js";
 import type * as inbound from "../inbound.js";
 import type * as outbound from "../outbound.js";
@@ -35,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   billings: typeof billings;
   clients: typeof clients;
   collection: typeof collection;
+  descriptions: typeof descriptions;
   groups: typeof groups;
   inbound: typeof inbound;
   outbound: typeof outbound;

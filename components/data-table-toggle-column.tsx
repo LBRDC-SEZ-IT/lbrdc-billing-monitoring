@@ -24,7 +24,7 @@ export default function DataTableToggleColumn<TData>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className={cn(className)} {...props}>
-        <Button size={"icon"} variant="outline" className="h-9 w-9">
+        <Button tooltip="Toggle Columns" size={"icon"} variant="outline" className="h-9 w-9">
           <Icons.settings className="size-4" />
         </Button>
       </DropdownMenuTrigger>

@@ -78,7 +78,7 @@ const DialogFormAddAccountInbound = ({ open, setOpen, row }: Props) => {
       createInboundAccount({
         author_ref_ID: currentUser!,
         billable_amount: data.billableAmount,
-        client_ref_ID: row.original.clientRefID as Id<"clients">,
+        client_ref_ID: row.original.client_ref_ID as Id<"clients">,
         outbound_ref_ID: row.original._id! as Id<"outboundAccounts">,
       });
 

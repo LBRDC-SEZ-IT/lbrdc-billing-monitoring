@@ -26,10 +26,10 @@ export const get = query({
 
     return outbounds.map(outbound => ({
       ...outbound,
-      clientCode: clients.find((f) => f._id === outbound.clientRefID)?.code,
-      clientName: clients.find((f) => f._id === outbound.clientRefID)?.name,
-      groupName: groups.find((f) => f._id === outbound.groupRefID)?.name,
-      subgroupName: outbound.subgroupRefID ? subgroups.find((f) => f._id === outbound.subgroupRefID)?.name : undefined,
+      clientCode: clients.find((f) => f._id === outbound.client_ref_ID)?.code,
+      clientName: clients.find((f) => f._id === outbound.client_ref_ID)?.name,
+      groupName: groups.find((f) => f._id === outbound.group_ref_ID)?.name,
+      subgroupName: outbound.subgroup_ref_ID ? subgroups.find((f) => f._id === outbound.subgroup_ref_ID)?.name : undefined,
     })) as OutboundView[];
   }
 })
@@ -37,10 +37,10 @@ export const get = query({
 export const create = mutation({
   args: {
     code: v.string(),
-    clientRefID: v.string(),
-    groupRefID: v.string(),
-    subgroupRefID: v.optional(v.string(),),
-    authorRefID: v.string(),
+    client_ref_ID: v.string(),
+    group_ref_ID: v.string(),
+    subgroup_ref_ID: v.optional(v.string(),),
+    author_ref_ID: v.string(),
     datePeriod: v.object({
       from: v.string(),
       to: v.string(),
@@ -61,19 +61,26 @@ export const create = mutation({
     }))
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert("outboundAccounts", {
-      code: args.code,
-      clientRefID: args.clientRefID,
-      groupRefID: args.groupRefID,
-      subgroupRefID: args.subgroupRefID,
-      authorRefID: args.authorRefID,
-      datePeriod: args.datePeriod,
-      totalAmount: args.totalAmount,
-      categories: args.categories,
-      status: args.status,
-      statusInfo: args.statusInfo,
-      approvalInfo: args.approvalInfo
-    });
+    try {
+      await ctx.db.insert("outboundAccounts", {
+        code: args.code,
+        client_ref_ID: args.client_ref_ID,
+        group_ref_ID: args.group_ref_ID,
+        subgroup_ref_ID: args.subgroup_ref_ID,
+        author_ref_ID: args.author_ref_ID,
+        datePeriod: args.datePeriod,
+        totalAmount: args.totalAmount,
+        categories: args.categories,
+        status: args.status,
+        statusInfo: args.statusInfo,
+        approvalInfo: args.approvalInfo
+      });
+
+      return { success: true, message: "You have successfully added a new account!" }
+    } catch (error) {
+      console.log("convex/outbound.ts:create; ", error)
+      return { success: false, message: "Failed to add a new account." }
+    }
   },
 });
 

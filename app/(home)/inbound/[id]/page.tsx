@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { calculatePercentage, formatDateRange } from "@/config/global";
+import { calculatePercentage, convertToMoney, formatDateRange } from "@/config/global";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
@@ -25,20 +25,17 @@ import { DataTable } from "./_components/data-table";
 const InboundAccountPage = ({ params }: { params: { id: string } }) => {
   const inbounds = useQuery(api.inbound.get, { inboundID: params.id as Id<"inboundAccounts"> });
   const inbound = inbounds ? inbounds[0] : null;
-  const billingsWithCollection = useQuery(api.billings.getByRef, { ref_ID: params.id });
+  const billingsWithCollectionRemarks = useQuery(api.billings.getByRef, { ref_ID: params.id });
 
   if (inbound) {
-    const totalBilled = inbound.billings?.reduce((n, { amount }) => n + amount, 0);
-    let totalCollections = 0;
+    const billingPercentage = calculatePercentage(inbound.totalBillings, inbound.billable_amount);
+    const collectedPercentage = calculatePercentage(
+      inbound.totalCollections,
+      inbound.totalBillings ?? 0
+    );
 
-    inbound.billings?.forEach((billing) => {
-      billing.collections?.forEach((collection) => {
-        totalCollections += collection.amount;
-      });
-    });
-
-    const billingPercentage = calculatePercentage(totalBilled ?? 0, inbound.billable_amount);
-    const collectedPercentage = calculatePercentage(totalCollections, totalBilled ?? 0);
+    const unbilledAmount = inbound.billable_amount - inbound.totalBillings;
+    const uncollectedAmount = inbound.totalBillings - inbound.totalCollections;
 
     return (
       <>
@@ -69,25 +66,37 @@ const InboundAccountPage = ({ params }: { params: { id: string } }) => {
                   {inbound.clientCode}
                 </span>
               </CardTitle>
-              <CardDescription>
-                Account code: <span className="text-primary font-medium">{inbound.code}</span>
+              <CardDescription className="space-y-2">
+                <p>
+                  Account code: <span className="text-primary font-medium">{inbound.code}</span>
+                </p>
+                <p className="text-primary bg-muted px-3 py-1.5 rounded-full w-fit font-medium text-xs flex items-center">
+                  <Icons.display.contract className="min-w-4 min-h-4 size-4 mr-1.5" />
+                  July 5, 2023 - July 5, 2024
+                </p>
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Separator className="mt-1 mb-5" />
-              <div className="grid grid-cols-4 gap-4 text-sm">
+            <CardContent className="pb-0">
+              <Separator className="mt-1 mb-3.5" />
+              <div className="grid grid-cols-3 gap-4 text-sm font-semibold">
                 <div className="flex gap-3 items-center">
-                  <Icons.display.group className="min-w-4 min-h-4 size-4 text-muted-foreground" />
+                  <span className="p-2 rounded-full bg-muted">
+                    <Icons.display.group className="min-w-4 min-h-4 size-4" />
+                  </span>
                   <p className="truncate">{inbound.groupName}</p>
                 </div>
                 <div className="flex gap-3 items-center">
-                  <Icons.display.subgroup className="min-w-4 min-h-4 size-4 text-muted-foreground" />
+                  <span className="p-2 rounded-full bg-muted">
+                    <Icons.display.subgroup className="min-w-4 min-h-4 size-4" />
+                  </span>
                   <p className="truncate">
                     {inbound.subgroupName ? inbound.subgroupName : "No Subgroup"}
                   </p>
                 </div>
                 <div className="flex gap-3 items-center">
-                  <Icons.display.dateRange className="min-w-4 min-h-4 size-4 text-muted-foreground" />
+                  <span className="p-2 rounded-full bg-muted">
+                    <Icons.display.dateRange className="min-w-4 min-h-4 size-4" />
+                  </span>
                   <p className="truncate">
                     {formatDateRange({
                       from: inbound.datePeriod?.from!,
@@ -107,20 +116,28 @@ const InboundAccountPage = ({ params }: { params: { id: string } }) => {
                   <Icons.display.account className="min-w-6 min-h-6 size-6 text-muted-foreground" />
                 </div>
                 <CardTitle className="overflow-hidden text-ellipsis text-blue-500">
-                  {totalBilled?.toLocaleString("en-us", {
-                    currency: "PHP",
-                    style: "currency",
-                  })}
+                  {convertToMoney(inbound.totalBillings)}
                 </CardTitle>
-                <CardDescription>
-                  Out of{" "}
-                  <span className="text-primary font-medium">
-                    {inbound.billable_amount?.toLocaleString("en-us", {
-                      currency: "PHP",
-                      style: "currency",
-                    })}
-                  </span>{" "}
-                  billable amount
+                <CardDescription className="space-y-2">
+                  <p>
+                    Out of{" "}
+                    <span className="text-primary font-medium">
+                      {convertToMoney(inbound.billable_amount)}
+                    </span>{" "}
+                    billable amount
+                  </p>
+                  {unbilledAmount !== 0 ? (
+                    <p className="bg-red-500/20 text-red-500 px-2 py-1.5 rounded-full w-fit font-medium text-xs flex items-center">
+                      <Icons.display.incomplete className="min-w-4 min-h-4 size-4 mr-1" />
+                      <span className="font-semibold mr-1">{convertToMoney(unbilledAmount)}</span>
+                      unbilled amount
+                    </p>
+                  ) : (
+                    <p className="bg-blue-500/20 text-blue-500 px-2 py-1.5 rounded-full w-fit font-medium text-xs flex items-center">
+                      <Icons.display.complete className="min-w-4 min-h-4 size-4 mr-1" />
+                      Fully Billed
+                    </p>
+                  )}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -139,20 +156,35 @@ const InboundAccountPage = ({ params }: { params: { id: string } }) => {
                   <Icons.display.account className="min-w-6 min-h-6 size-6 text-muted-foreground" />
                 </div>
                 <CardTitle className="overflow-hidden text-ellipsis text-emerald-500">
-                  {totalCollections?.toLocaleString("en-us", {
-                    currency: "PHP",
-                    style: "currency",
-                  })}
+                  {convertToMoney(inbound.totalCollections)}
                 </CardTitle>
-                <CardDescription>
-                  Out of{" "}
-                  <span className="text-primary font-medium">
-                    {totalBilled?.toLocaleString("en-us", {
-                      currency: "PHP",
-                      style: "currency",
-                    })}
-                  </span>{" "}
-                  total billings
+                <CardDescription className="space-y-2">
+                  <p>
+                    Out of{" "}
+                    <span className="text-primary font-medium">
+                      {convertToMoney(inbound.totalBillings)}
+                    </span>{" "}
+                    total billings
+                  </p>
+                  {uncollectedAmount !== 0 ? (
+                    <p className="bg-red-500/20 text-red-500 px-2 py-1.5 rounded-full w-fit font-medium text-xs flex items-center">
+                      <Icons.display.incomplete className="min-w-4 min-h-4 size-4 mr-1" />
+                      <span className="font-semibold mr-1">
+                        {convertToMoney(uncollectedAmount)}
+                      </span>
+                      uncollected amount
+                    </p>
+                  ) : inbound.totalBillings === 0 ? (
+                    <p className="bg-red-500/20 text-red-500 px-2 py-1.5 rounded-full w-fit font-medium text-xs flex items-center">
+                      <Icons.display.incomplete className="min-w-4 min-h-4 size-4 mr-1" />
+                      No billings yet
+                    </p>
+                  ) : (
+                    <p className="bg-emerald-500/20 text-emerald-500 px-2 py-1.5 rounded-full w-fit font-medium text-xs flex items-center">
+                      <Icons.display.complete className="min-w-4 min-h-4 size-4 mr-1" />
+                      Fully Collected
+                    </p>
+                  )}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -169,10 +201,7 @@ const InboundAccountPage = ({ params }: { params: { id: string } }) => {
             <div>
               <p className="font-medium text-sm">Outbound Total Amount</p>
               <p className="text-lg font-semibold text-red-500">
-                {inbound.amount?.toLocaleString("en-us", {
-                  currency: "PHP",
-                  style: "currency",
-                })}
+                {convertToMoney(inbound.amount ?? 0)}
               </p>
             </div>
             <Separator orientation="vertical" className="mx-6" />
@@ -181,11 +210,7 @@ const InboundAccountPage = ({ params }: { params: { id: string } }) => {
                 <p
                   key={index}
                   className="text-sm px-3 py-1 bg-red-500/15 dark:bg-red-500/10 text-red-500 rounded-md">
-                  {item.name} -{" "}
-                  {item.amount.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "PHP",
-                  })}
+                  {item.name} - {convertToMoney(item.amount)}
                 </p>
               ))}
             </div>
@@ -212,8 +237,8 @@ const InboundAccountPage = ({ params }: { params: { id: string } }) => {
             <CardContent>
               <DataTable
                 columns={columnBillings}
-                data={billingsWithCollection ?? []}
-                isLoading={!billingsWithCollection}
+                data={billingsWithCollectionRemarks ?? []}
+                isLoading={!billingsWithCollectionRemarks}
                 accountID={params.id}
               />
             </CardContent>

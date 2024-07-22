@@ -16,6 +16,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,6 +24,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { convertToMoney } from "@/config/global";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
@@ -168,6 +170,9 @@ const DialogFormAddBilling = ({ className, accountID }: Props) => {
                         {...field}
                       />
                     </FormControl>
+                    <FormDescription>
+                      Amount Preview: {convertToMoney(Number(field.value) || 0)}
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

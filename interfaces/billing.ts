@@ -1,4 +1,4 @@
-import { Collection } from "./collection";
+import { Collection, CollectionInfo } from "./collection";
 
 export interface Billing {
   _id?: string;
@@ -11,4 +11,9 @@ export interface Billing {
 
 export interface BillingWithCollection extends Billing {
   collections?: Collection[];
+}
+
+export interface BillingWithCollectionRemarks extends Billing {
+  billingRemarksCount?: number;
+  collections?: CollectionInfo[];
 }

@@ -22,9 +22,9 @@ const ButtonCollectTrigger = ({ billingID }: Props) => {
       <Button
         onClick={handleClick}
         size={"sm"}
-        variant={"ghost"}
-        className="text-xs mx-auto text-muted-foreground">
-        COLLECT
+        variant={"outline"}
+        className="text-xs mx-auto font-semibold">
+        Add Collection
       </Button>
       {isDialogOpen && billingID && (
         <DialogFormAddCollection

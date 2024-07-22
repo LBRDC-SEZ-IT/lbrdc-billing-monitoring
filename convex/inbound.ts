@@ -20,8 +20,8 @@ export const get = query({
     const inboundViews = await Promise.all(inbounds.map(async (inbound) => {
       const client = await ctx.db.get(inbound.client_ref_ID as Id<"clients">);
       const outbound = await ctx.db.get(inbound.outbound_ref_ID as Id<"outboundAccounts">);
-      const group = await ctx.db.get(outbound?.groupRefID as Id<"groups">);
-      const subgroup = outbound?.subgroupRefID ? await ctx.db.get(outbound?.subgroupRefID as Id<"subgroups">) : null;
+      const group = await ctx.db.get(outbound?.group_ref_ID as Id<"groups">);
+      const subgroup = outbound?.subgroup_ref_ID ? await ctx.db.get(outbound?.subgroup_ref_ID as Id<"subgroups">) : null;
       const categories = outbound?.categories;
       const billings = await ctx.db.query("billings")
         .withIndex("by_account_ref", (q) => q.eq("account_ref_ID", inbound._id as Id<"inboundAccounts">))
@@ -38,6 +38,19 @@ export const get = query({
         } as BillingWithCollection;
       }));
 
+      let totalCollections = 0;
+      let collectionsCount = 0;
+
+      billingsWithCollections.forEach(billing => {
+        billing.collections?.forEach(collection => {
+          collectionsCount++;
+          totalCollections += collection.amount;
+        });
+      });
+
+      const totalBillings = billingsWithCollections.reduce((sum, billing) => sum + billing.amount, 0);
+      const balance = totalBillings - totalCollections;
+
       return {
         ...inbound,
         clientCode: client?.code,
@@ -51,7 +64,11 @@ export const get = query({
         },
         amount: outbound?.totalAmount,
         billings: billingsWithCollections,
-        categories: categories
+        categories: categories,
+        totalBillings: totalBillings,
+        balance: balance,
+        collectionCount: collectionsCount,
+        totalCollections: totalCollections,
       } as InboundView
     }))
 

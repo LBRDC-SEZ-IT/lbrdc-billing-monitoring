@@ -19,5 +19,23 @@ export const outboundConfig: OutboundConfig = {
       icon: Icons.navPayables,
       href: "/outbound",
     },
+    {
+      title: "Management",
+      visible: true,
+      icon: Icons.sideNavigation.management,
+      hasSubMenu: true,
+      subMenuItems: [
+        {
+          title: "Clients",
+          visible: true,
+          href: "/clients",
+        },
+        {
+          title: "Groups",
+          visible: true,
+          href: "/groups",
+        },
+      ]
+    }
   ]
 }

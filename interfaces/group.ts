@@ -1,6 +1,11 @@
-export interface Group {
-  _id: string;
-  clientRefID: string;
+import { Client } from "./client";
+import { ConvexStandard } from "./convex";
+
+export interface Group extends ConvexStandard {
+  client_ref_ID: string;
   name: string;
-  _creationTime: number;
+}
+
+export interface GroupView extends Group {
+  client_info: Client;
 }

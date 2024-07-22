@@ -17,3 +17,18 @@ export const create = mutation({
     })
   }
 })
+
+export const remove = mutation({
+  args: {
+    id: v.id("collections")
+  },
+  handler: async (ctx, args) => {
+    try {
+      await ctx.db.delete(args.id);
+      return { success: true, message: "Collection deleted successfully." };
+    } catch (error) {
+      console.error("Failed to delete collection:", error);
+      return { success: false, message: "Failed to delete collection." };
+    }
+  }
+})

@@ -5,27 +5,38 @@ export default defineSchema({
   clients: defineTable({
     code: v.string(),
     name: v.string(),
+    description: v.optional(v.string()),
+    contracts: v.array(v.object({
+      status: v.string(),
+      from_date: v.string(),
+      to_date: v.string(),
+      timestamp: v.string()
+    }))
   }).index("by_name", ["name"]),
+
   groups: defineTable({
-    clientRefID: v.id("clients"),
+    client_ref_ID: v.id("clients"),
     name: v.string(),
   }).index("by_name", ["name"]),
+
   subgroups: defineTable({
-    groupRefID: v.id("groups"),
+    group_ref_ID: v.id("groups"),
     name: v.string(),
   }).index("by_name", ["name"]),
+
   inboundAccounts: defineTable({
     author_ref_ID: v.id("users"),
     billable_amount: v.float64(),
     client_ref_ID: v.id("clients"),
     outbound_ref_ID: v.id("outboundAccounts"),
   }),
+
   outboundAccounts: defineTable({
     code: v.string(),
-    clientRefID: v.string(),
-    groupRefID: v.string(),
-    subgroupRefID: v.optional(v.string()),
-    authorRefID: v.string(),
+    client_ref_ID: v.string(),
+    group_ref_ID: v.string(),
+    subgroup_ref_ID: v.optional(v.string()),
+    author_ref_ID: v.string(),
     datePeriod: v.object({
       from: v.string(),
       to: v.string(),
@@ -45,20 +56,29 @@ export default defineSchema({
       timestamp: v.string(),
     }))
   }),
+
   users: defineTable({
     tokenIdentifier: v.string(),
     email: v.string(),
   }).index("by_token", ["tokenIdentifier"]),
+
   billings: defineTable({
     account_ref_ID: v.id("inboundAccounts"),
     code: v.string(),
     amount: v.float64(),
     timestamp: v.string(),
   }).index("by_account_ref", ["account_ref_ID"]),
+
   collections: defineTable({
     billing_ref_ID: v.id("billings"),
     code: v.string(),
     amount: v.float64(),
     timestamp: v.string()
   }).index("by_billing_ref", ["billing_ref_ID"]),
+
+  descriptions: defineTable({
+    ref_ID: v.string(),
+    type: v.string(),
+    description: v.string(),
+  }).index("by_ref_ID", ["ref_ID"])
 });

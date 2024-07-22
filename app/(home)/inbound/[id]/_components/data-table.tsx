@@ -28,6 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 import DialogFormAddBilling from "./dialog-form-add-billing";
 
 interface DataTableProps<TData, TValue> {
@@ -112,7 +113,9 @@ export function DataTable<TData, TValue>({
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <React.Fragment key={row.id}>
-                  <TableRow data-state={row.getIsSelected() && "selected"}>
+                  <TableRow
+                    data-state={row.getIsSelected() && "selected"}
+                    className={cn(row.getIsExpanded() && "border-b-0 bg-muted-foreground/5")}>
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
@@ -123,8 +126,8 @@ export function DataTable<TData, TValue>({
                     ))}
                   </TableRow>
                   {row.getIsExpanded() && (
-                    <TableRow>
-                      <TableCell colSpan={columns.length}>
+                    <TableRow className={cn(row.getIsExpanded() && "bg-muted-foreground/5")}>
+                      <TableCell colSpan={columns.length} className="pt-0">
                         {flexRender(columns.find((c) => c.id === "ExpandedContent")!.cell!, {
                           row,
                           column: columns.find((c) => c.id === "ExpandedContent"),
